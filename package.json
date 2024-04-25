@@ -6,7 +6,7 @@
   "author": "Elkfox <opensource@elkfox.com> (https://elkfox.io)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Elkfox/Ajaxinate.git"
+    "url": "git+https://github.com/darrenhizon/Ajaxinate.git"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -36,7 +36,7 @@
     "release": "gulp release"
   },
   "bugs": {
-    "url": "https://github.com/Elkfox/Ajaxinate/issues"
+    "url": "https://github.com/darrenhizon/Ajaxinate/issues"
   },
   "homepage": "https://ajaxinate.elkfox.io/",
   "main": "src/ajaxinate.js",
@@ -53,5 +53,8 @@
   ],
   "dependencies": {
     "natives": "^1.1.6"
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11"
   }
 }

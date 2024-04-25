@@ -31,9 +31,12 @@ export function Ajaxinate(config) {
     method: 'scroll',
     container: '#AjaxinateContainer',
     pagination: '#AjaxinatePagination',
+    productCard: '.product-card',
     offset: 0,
     loadingText: 'Loading',
     callback: null,
+    saveHistory: false,
+    loader: false
   };
 
   // Merge custom configs with defaults
@@ -47,23 +50,32 @@ export function Ajaxinate(config) {
   this.removeClickListener = this.removeClickListener.bind(this);
   this.removeScrollListener = this.removeScrollListener.bind(this);
   this.removePaginationElement = this.removePaginationElement.bind(this);
+  this.loadPreviousContent = this.loadPreviousContent.bind(this);
   this.destroy = this.destroy.bind(this);
 
   // Selectors
   this.containerElement = document.querySelector(this.settings.container);
   this.paginationElement = document.querySelector(this.settings.pagination);
+  this.productCardElement = document.querySelectorAll(this.settings.productCard);
   this.initialize();
 }
 
 Ajaxinate.prototype.initialize = function initialize() {
   if (!this.containerElement) { return; }
-
   const initializers = {
     click: this.addClickListener,
     scroll: this.addScrollListeners,
   };
 
   initializers[this.settings.method]();
+
+  if(this.settings.saveHistory) {
+    this.addClickListenerProductCard();
+  }
+
+  if(this.settings.saveHistory) {
+    document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
+  }
 };
 
 Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
@@ -114,6 +126,93 @@ Ajaxinate.prototype.checkIfPaginationInView = function checkIfPaginationInView()
   }
 };
 
+Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProductCard() {
+  if (!this.productCardElement) { return; }
+
+  if (!this.containerElement.hasClickListener) {
+    this.containerElement.addEventListener('click', function(event) {
+      const productCard = event.target.closest('.product-card');
+
+      if (productCard && this.contains(productCard)) {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+        console.log('product card clicked');
+      }
+    });
+
+    this.containerElement.hasClickListener = true;
+  }
+};
+
+Ajaxinate.prototype.addLoader = function addLoader() {
+  const loaderContainer = document.createElement('div');
+  loaderContainer.className = 'loader-container';
+  const loader = document.createElement('div');
+  loader.className = 'loader';
+  loaderContainer.appendChild(loader);
+  this.containerElement.appendChild(loaderContainer);
+};
+
+Ajaxinate.prototype.removeLoader = function removeLoader() {
+  this.containerElement.removeChild(document.querySelector('.loader-container'));
+};
+
+Ajaxinate.prototype.loadPreviousContent = async function loadPreviousContent() {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const page = urlParams.get('page');
+
+  if (page === null) {
+    return;
+  }
+
+  if(this.settings.loader) {
+    this.addLoader();
+  }
+  
+  for (let i = page - 1; i >= 1; i--) {
+    this.request = new XMLHttpRequest();
+    const url = window.location.origin + window.location.pathname + `?page=${i}`;
+
+    await new Promise((resolve, reject) => {
+      this.request.onreadystatechange = function success() {
+        if (this.request.readyState !== 4) { return; }
+        if (!this.request.responseXML || this.request.status !== 200) { return; }
+
+        const newContainer = this.request.responseXML.querySelectorAll(this.settings.container)[0];
+        const newPagination = this.request.responseXML.querySelectorAll(this.settings.pagination)[0];
+
+        this.containerElement.insertAdjacentHTML('afterbegin', newContainer.innerHTML);
+
+        if (typeof newPagination === 'undefined') {
+          // this.removePaginationElement();
+        } else {
+          this.initialize();
+        }
+
+        resolve();
+      }.bind(this);
+
+      this.request.open('GET', url);
+      this.request.responseType = 'document';
+      this.request.send();
+    });
+  }
+
+  this.scrollToSavedPosition();
+
+  if(this.settings.loader) {
+    this.removeLoader();
+  }
+};
+
+Ajaxinate.prototype.scrollToSavedPosition = function scrollToSavedPosition() {
+  const savedPosition = sessionStorage.getItem('scrollPosition');
+  if (savedPosition) {
+   window.scrollTo({ top: savedPosition, behavior: 'smooth' });
+  sessionStorage.removeItem('scrollPosition');
+  }
+};
+
 Ajaxinate.prototype.loadMore = function loadMore() {
   this.request = new XMLHttpRequest();
 
@@ -127,9 +226,16 @@ Ajaxinate.prototype.loadMore = function loadMore() {
     this.containerElement.insertAdjacentHTML('beforeend', newContainer.innerHTML);
 
     if (typeof newPagination === 'undefined') {
+      if (this.settings.saveHistory) {
+        window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
+      }
       this.removePaginationElement();
     } else {
       this.paginationElement.innerHTML = newPagination.innerHTML;
+
+      if (this.settings.saveHistory) {
+        window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
+      }
 
       if (this.settings.callback && typeof this.settings.callback === 'function') {
         this.settings.callback(this.request.responseXML);
