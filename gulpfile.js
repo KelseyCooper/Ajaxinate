@@ -136,7 +136,6 @@ gulp.task('release', function (callback) {
     type = args.type;
   }
   runSequence(
-    'lint',
     'bump-version',
     'license',
     'changelog',

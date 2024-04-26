@@ -99,16 +99,25 @@ Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
   window.addEventListener('orientationchange', this.checkIfPaginationInView);
 };
 
-Ajaxinate.prototype.addClickListener = function addClickListener() {
-  if (!this.paginationElement) {
+Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProductCard() {
+  if (!this.productCardElement) {
     return;
   }
 
-  this.nextPageLinkElement = this.paginationElement.querySelector('a');
-  this.clickActive = true;
+  if (!this.containerElement.hasClickListener) {
+    var clickOrTouchHandler = function clickOrTouchHandler(event) {
+      var productCard = event.target.closest('.product-card');
 
-  if (typeof this.nextPageLinkElement !== 'undefined' && this.nextPageLinkElement !== null) {
-    this.nextPageLinkElement.addEventListener('click', this.preventMultipleClicks);
+      if (productCard && this.contains(productCard)) {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+        console.log('product card clicked');
+      }
+    };
+
+    this.containerElement.addEventListener('click', clickOrTouchHandler);
+    this.containerElement.addEventListener('touchstart', clickOrTouchHandler);
+
+    this.containerElement.hasClickListener = true;
   }
 };
 
@@ -154,7 +163,6 @@ Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProdu
 
       if (productCard && this.contains(productCard)) {
         sessionStorage.setItem('scrollPosition', window.scrollY);
-        console.log('product card clicked');
       }
     });
 

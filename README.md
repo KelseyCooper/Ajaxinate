@@ -1,10 +1,27 @@
 [![Build Status](https://travis-ci.org/Elkfox/Ajaxinate.svg?branch=master)](https://travis-ci.org/Elkfox/Ajaxinate)
 
-# Ajaxinate
+# Ajaxinate (Forked from Elkfox)
 
 Ajax pagination plugin for Shopify themes
 
-<a href="https://ajaxinate.elkfox.io/" target="_blank">View the documentation and demo site to get started</a>
+### Usage
+
+1. Include in your `Ajaxinate` script.
+```html
+import {Ajaxinate} from 'fork-ajaxinate'
+```
+2. Initialize the plugin.
+
+```html
+ new Ajaxinate({
+  container: '.ajaxinate',
+  pagination: '.paginate-button',
+  loadingText: 'Loading more...',
+  method: 'click',
+  saveHistory: true,
+  loader: true
+ });
+```
 
 ### License
 

@@ -1,9 +1,9 @@
 {
-  "name": "ajaxinate",
+  "name": "fork-ajaxinate",
   "license": "MIT",
   "description": "Ajax Pagination Javascript Plugin",
-  "version": "3.0.1",
-  "author": "Elkfox <opensource@elkfox.com> (https://elkfox.io)",
+  "version": "3.0.2",
+  "author": "gaurdjatixa",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/darrenhizon/Ajaxinate.git"
@@ -38,7 +38,6 @@
   "bugs": {
     "url": "https://github.com/darrenhizon/Ajaxinate/issues"
   },
-  "homepage": "https://ajaxinate.elkfox.io/",
   "main": "src/ajaxinate.js",
   "directories": {
     "doc": "docs"
@@ -52,7 +51,8 @@
     "ajax-pagination-plugin"
   ],
   "dependencies": {
-    "natives": "^1.1.6"
+    "natives": "^1.1.6",
+    "smoothscroll-polyfill": "^0.4.4"
   },
   "overrides": {
     "graceful-fs": "^4.2.11"
