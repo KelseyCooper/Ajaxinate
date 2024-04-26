@@ -86,23 +86,14 @@ Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
   window.addEventListener('orientationchange', this.checkIfPaginationInView);
 };
 
-Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProductCard() {
-  if (!this.productCardElement) { return; }
+Ajaxinate.prototype.addClickListener = function addClickListener() {
+  if (!this.paginationElement) { return; }
 
-  if (!this.containerElement.hasClickListener) {
-    const clickOrTouchHandler = function(event) {
-      const productCard = event.target.closest('.product-card');
+  this.nextPageLinkElement = this.paginationElement.querySelector('a');
+  this.clickActive = true;
 
-      if (productCard && this.contains(productCard)) {
-        sessionStorage.setItem('scrollPosition', window.scrollY);
-        console.log('product card clicked');
-      }
-    };
-
-    this.containerElement.addEventListener('click', clickOrTouchHandler);
-    this.containerElement.addEventListener('touchstart', clickOrTouchHandler);
-
-    this.containerElement.hasClickListener = true;
+  if (typeof this.nextPageLinkElement !== 'undefined' && this.nextPageLinkElement !== null) {
+    this.nextPageLinkElement.addEventListener('click', this.preventMultipleClicks);
   }
 };
 
@@ -139,13 +130,17 @@ Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProdu
   if (!this.productCardElement) { return; }
 
   if (!this.containerElement.hasClickListener) {
-    this.containerElement.addEventListener('click', function (event) {
+    const clickOrTouchHandler = function(event) {
       const productCard = event.target.closest('.product-card');
 
       if (productCard && this.contains(productCard)) {
         sessionStorage.setItem('scrollPosition', window.scrollY);
+        console.log('product card clicked');
       }
-    });
+    };
+
+    this.containerElement.addEventListener('click', clickOrTouchHandler);
+    this.containerElement.addEventListener('touchstart', clickOrTouchHandler);
 
     this.containerElement.hasClickListener = true;
   }
