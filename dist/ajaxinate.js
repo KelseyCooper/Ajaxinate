@@ -5,13 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Ajaxinate = Ajaxinate;
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+var _smoothscrollPolyfill = require('smoothscroll-polyfill');
 
-/* @preserve
- * https://github.com/Elkfox/Ajaxinate
- * Copyright (c) 2017 Elkfox Co Pty Ltd (elkfox.com)
- * MIT License (do not remove above copyright!)
- */
+var _smoothscrollPolyfill2 = _interopRequireDefault(_smoothscrollPolyfill);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /* @preserve
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * https://github.com/Elkfox/Ajaxinate
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Copyright (c) 2017 Elkfox Co Pty Ltd (elkfox.com)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * MIT License (do not remove above copyright!)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
 
 /* Configurable options;
  *
@@ -87,6 +91,8 @@ Ajaxinate.prototype.initialize = function initialize() {
   if (this.settings.saveHistory) {
     document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
   }
+
+  _smoothscrollPolyfill2.default.polyfill();
 };
 
 Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
@@ -99,25 +105,16 @@ Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
   window.addEventListener('orientationchange', this.checkIfPaginationInView);
 };
 
-Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProductCard() {
-  if (!this.productCardElement) {
+Ajaxinate.prototype.addClickListener = function addClickListener() {
+  if (!this.paginationElement) {
     return;
   }
 
-  if (!this.containerElement.hasClickListener) {
-    var clickOrTouchHandler = function clickOrTouchHandler(event) {
-      var productCard = event.target.closest('.product-card');
+  this.nextPageLinkElement = this.paginationElement.querySelector('a');
+  this.clickActive = true;
 
-      if (productCard && this.contains(productCard)) {
-        sessionStorage.setItem('scrollPosition', window.scrollY);
-        console.log('product card clicked');
-      }
-    };
-
-    this.containerElement.addEventListener('click', clickOrTouchHandler);
-    this.containerElement.addEventListener('touchstart', clickOrTouchHandler);
-
-    this.containerElement.hasClickListener = true;
+  if (typeof this.nextPageLinkElement !== 'undefined' && this.nextPageLinkElement !== null) {
+    this.nextPageLinkElement.addEventListener('click', this.preventMultipleClicks);
   }
 };
 
@@ -158,13 +155,17 @@ Ajaxinate.prototype.addClickListenerProductCard = function addClickListenerProdu
   }
 
   if (!this.containerElement.hasClickListener) {
-    this.containerElement.addEventListener('click', function (event) {
+    var clickOrTouchHandler = function clickOrTouchHandler(event) {
       var productCard = event.target.closest('.product-card');
 
       if (productCard && this.contains(productCard)) {
         sessionStorage.setItem('scrollPosition', window.scrollY);
+        console.log('product card clicked');
       }
-    });
+    };
+
+    this.containerElement.addEventListener('click', clickOrTouchHandler);
+    this.containerElement.addEventListener('touchstart', clickOrTouchHandler);
 
     this.containerElement.hasClickListener = true;
   }
