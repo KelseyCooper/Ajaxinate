@@ -143,7 +143,6 @@ gulp.task('release', function (callback) {
     'commit-changes',
     'push-changes',
     'create-new-tag',
-    'github-release',
     function (error) {
       if (error) {
         console.log(error.message);
