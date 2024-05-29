@@ -78,8 +78,6 @@ Ajaxinate.prototype.initialize = function initialize() {
   if (this.settings.saveHistory) {
     document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
   }
-
-  smoothscroll.polyfill();
 };
 
 Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
@@ -169,6 +167,7 @@ Ajaxinate.prototype.loadPreviousContent = async function loadPreviousContent() {
   const page = urlParams.get('page');
 
   if (page === null) {
+    this.scrollToSavedPosition();
     return;
   }
 
@@ -216,6 +215,7 @@ Ajaxinate.prototype.loadPreviousContent = async function loadPreviousContent() {
 Ajaxinate.prototype.scrollToSavedPosition = function scrollToSavedPosition() {
   const savedPosition = sessionStorage.getItem('scrollPosition');
   if (savedPosition) {
+    smoothscroll.polyfill();
     window.scrollTo({ top: savedPosition, behavior: 'smooth' });
     sessionStorage.removeItem('scrollPosition');
   }

@@ -91,8 +91,6 @@ Ajaxinate.prototype.initialize = function initialize() {
   if (this.settings.saveHistory) {
     document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
   }
-
-  _smoothscrollPolyfill2.default.polyfill();
 };
 
 Ajaxinate.prototype.addScrollListeners = function addScrollListeners() {
@@ -199,13 +197,14 @@ Ajaxinate.prototype.loadPreviousContent = function () {
             page = urlParams.get('page');
 
             if (!(page === null)) {
-              _context2.next = 5;
+              _context2.next = 6;
               break;
             }
 
+            this.scrollToSavedPosition();
             return _context2.abrupt('return');
 
-          case 5:
+          case 6:
 
             if (this.settings.loader) {
               this.addLoader();
@@ -257,20 +256,20 @@ Ajaxinate.prototype.loadPreviousContent = function () {
             });
             i = page - 1;
 
-          case 8:
+          case 9:
             if (!(i >= 1)) {
-              _context2.next = 13;
+              _context2.next = 14;
               break;
             }
 
-            return _context2.delegateYield(_loop(i), 't0', 10);
+            return _context2.delegateYield(_loop(i), 't0', 11);
 
-          case 10:
+          case 11:
             i--;
-            _context2.next = 8;
+            _context2.next = 9;
             break;
 
-          case 13:
+          case 14:
 
             this.scrollToSavedPosition();
 
@@ -278,7 +277,7 @@ Ajaxinate.prototype.loadPreviousContent = function () {
               this.removeLoader();
             }
 
-          case 15:
+          case 16:
           case 'end':
             return _context2.stop();
         }
@@ -296,6 +295,7 @@ Ajaxinate.prototype.loadPreviousContent = function () {
 Ajaxinate.prototype.scrollToSavedPosition = function scrollToSavedPosition() {
   var savedPosition = sessionStorage.getItem('scrollPosition');
   if (savedPosition) {
+    _smoothscrollPolyfill2.default.polyfill();
     window.scrollTo({ top: savedPosition, behavior: 'smooth' });
     sessionStorage.removeItem('scrollPosition');
   }
