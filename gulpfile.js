@@ -137,7 +137,6 @@ gulp.task('release', function (callback) {
   }
   runSequence(
     'bump-version',
-    'license',
     'changelog',
     'build',
     'commit-changes',

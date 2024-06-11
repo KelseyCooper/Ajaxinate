@@ -1,4 +1,4 @@
-## 3.0.7 (2024-06-11)
+## 3.0.10 (2024-06-11)
 
 
 ### :bookmark:
@@ -8,6 +8,7 @@
 * version: 2.0.7 [patch] ([728db93](https://github.com/darrenhizon/Ajaxinate/commit/728db9391b03a30c803e209abb06123133781cfb))
 * version: 2.0.8 [patch] ([b144309](https://github.com/darrenhizon/Ajaxinate/commit/b144309dceec5d323e298497e2de06b3067c189b))
 * version: 2.0.9 [patch] ([e2870ad](https://github.com/darrenhizon/Ajaxinate/commit/e2870ada95b185b8f22ac9fca4a2fea8f228c55a))
+* version: null [patch] ([01ff9aa](https://github.com/darrenhizon/Ajaxinate/commit/01ff9aa9026325d78033fc298468deb7be56734c))
 * version: null [patch] ([21f4194](https://github.com/darrenhizon/Ajaxinate/commit/21f419459ccaae7fae4354db70422b17e25c58fa))
 
 ### :memo:
