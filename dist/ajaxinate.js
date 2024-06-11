@@ -5,17 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Ajaxinate = Ajaxinate;
 
-var _smoothscrollPolyfill = require('smoothscroll-polyfill');
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var _smoothscrollPolyfill2 = _interopRequireDefault(_smoothscrollPolyfill);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } /* @preserve
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * https://github.com/Elkfox/Ajaxinate
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * Copyright (c) 2017 Elkfox Co Pty Ltd (elkfox.com)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * MIT License (do not remove above copyright!)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            */
+/* @preserve
+ * https://github.com/Elkfox/Ajaxinate
+ * Copyright (c) 2017 Elkfox Co Pty Ltd (elkfox.com)
+ * MIT License (do not remove above copyright!)
+ */
 
 /* Configurable options;
  *
@@ -89,7 +85,7 @@ Ajaxinate.prototype.initialize = function initialize() {
   }
 
   if (this.settings.saveHistory) {
-    document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
+    document.addEventListener('load', this.loadPreviousContent);
   }
 };
 
@@ -295,7 +291,6 @@ Ajaxinate.prototype.loadPreviousContent = function () {
 Ajaxinate.prototype.scrollToSavedPosition = function scrollToSavedPosition() {
   var savedPosition = sessionStorage.getItem('scrollPosition');
   if (savedPosition) {
-    _smoothscrollPolyfill2.default.polyfill();
     window.scrollTo({ top: savedPosition, behavior: 'smooth' });
     sessionStorage.removeItem('scrollPosition');
   }

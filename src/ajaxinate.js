@@ -23,7 +23,6 @@
  * });
  */
 
-import smoothscroll from 'smoothscroll-polyfill';
 
 /* eslint-env browser */
 export function Ajaxinate(config) {
@@ -76,7 +75,7 @@ Ajaxinate.prototype.initialize = function initialize() {
   }
 
   if (this.settings.saveHistory) {
-    document.addEventListener('DOMContentLoaded', this.loadPreviousContent);
+    document.addEventListener('load', this.loadPreviousContent);
   }
 };
 
@@ -215,7 +214,6 @@ Ajaxinate.prototype.loadPreviousContent = async function loadPreviousContent() {
 Ajaxinate.prototype.scrollToSavedPosition = function scrollToSavedPosition() {
   const savedPosition = sessionStorage.getItem('scrollPosition');
   if (savedPosition) {
-    smoothscroll.polyfill();
     window.scrollTo({ top: savedPosition, behavior: 'smooth' });
     sessionStorage.removeItem('scrollPosition');
   }
