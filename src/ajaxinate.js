@@ -22,6 +22,20 @@ class Ajaxinate {
     this.paginationElement = document.querySelector(this.settings.pagination);
     this.productCardElement = document.querySelectorAll(this.settings.productCard);
 
+    // Functions
+    this.addClickListener = this.addClickListener.bind(this);
+    this.preventMultipleClicks = this.preventMultipleClicks.bind(this);
+    this.checkIfPaginationInView = this.checkIfPaginationInView.bind(this);
+    this.addScrollListeners = this.addScrollListeners.bind(this);
+    this.addClickListenerProductCard = this.addClickListenerProductCard.bind(this);
+    this.loadPreviousContent = this.loadPreviousContent.bind(this);
+    this.scrollToSavedPosition = this.scrollToSavedPosition.bind(this);
+    this.loadMore = this.loadMore.bind(this);
+    this.removeClickListener = this.removeClickListener.bind(this);
+    this.removePaginationElement = this.removePaginationElement.bind(this);
+    this.removeScrollListener = this.removeScrollListener.bind(this);
+    this.destroy = this.destroy.bind(this);
+    
     // Variables
     this.isLoaded = false;
 
