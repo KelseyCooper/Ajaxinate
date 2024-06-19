@@ -12,6 +12,7 @@ class Ajaxinate {
       callback: null,
       saveHistory: false,
       loader: false,
+      scrollHistory: false
     };
 
     // Merge custom configs with defaults
@@ -55,11 +56,15 @@ class Ajaxinate {
       this.addClickListenerProductCard();
     }
     
-    console.log('isLoaded: ' + this.isLoaded);
     if (this.settings.saveHistory && this.isLoaded == false) {
       console.log('adding event listener ' + this.isLoaded);
       this.loadPreviousContent();
       this.isLoaded = true;
+    }
+
+    if (!this.settings.saveHistory && this.settings.scrollHistory) {
+      this.addClickListenerProductCard();
+      this.scrollToSavedPosition();
     }
   }
 
@@ -120,7 +125,7 @@ class Ajaxinate {
   
         if (productCard && this.contains(productCard)) {
           sessionStorage.setItem('scrollPosition', window.scrollY);
-          console.log('product card clicked');
+          sessionStorage.setItem('productId', productCard.id);
         }
       };
   
@@ -145,67 +150,86 @@ class Ajaxinate {
   }
   
   async loadPreviousContent() {
+    // Check if the method is already running and exit if it is
+    if (this.isLoadingPreviousContent) {
+      console.log('loadPreviousContent is already running.');
+      return;
+    }
+
+    // Set the flag to true to indicate the method is now running
+    this.isLoadingPreviousContent = true;
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const page = urlParams.get('page');
-  
+
     if (page === null) {
       this.scrollToSavedPosition();
+      // Reset the flag before exiting
+      this.isLoadingPreviousContent = false;
       return;
     }
-  
-    if(this.settings.loader) {
+
+    if (this.settings.loader) {
       this.addLoader();
     }
-    
+
+    const htmlContents = [];
     const promises = [];
-    
+
     for (let i = page - 1; i >= 1; i--) {
       console.log('loading previous page ' + i);
-      this.request = new XMLHttpRequest();
       const url = window.location.origin + window.location.pathname + `?page=${i}`;
-  
+
       promises.push(new Promise((resolve) => {
-        this.request.onreadystatechange = function success() {
-          if (this.request.readyState !== 4) { return; }
-          if (!this.request.responseXML || this.request.status !== 200) { return; }
-  
-          const newContainer = this.request.responseXML.querySelectorAll(this.settings.container)[0];
-          const newPagination = this.request.responseXML.querySelectorAll(this.settings.pagination)[0];
-  
-          this.containerElement.insertAdjacentHTML('afterbegin', newContainer.innerHTML);
-  
-          if (typeof newPagination === 'undefined') {
-            // this.removePaginationElement();
-          } else {
-            this.initialize();
-          }
-  
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+          if (request.readyState !== 4) return;
+          if (!request.responseXML || request.status !== 200) return;
+
+          const newContainer = request.responseXML.querySelectorAll(this.settings.container)[0];
+          htmlContents[i] = newContainer.innerHTML; // Store the HTML content in the array
+
           resolve();
         }.bind(this);
-  
-        this.request.open('GET', url);
-        this.request.responseType = 'document';
-        this.request.send();
+
+        request.open('GET', url);
+        request.responseType = 'document';
+        request.send();
       }));
     }
-  
+
     await Promise.all(promises);
-  
+
+    // Concatenate and insert the HTML contents in one go
+    const combinedHTML = htmlContents.filter(content => content !== undefined).join('');
+    this.containerElement.insertAdjacentHTML('afterbegin', combinedHTML);
+
     this.scrollToSavedPosition();
-  
-    if(this.settings.loader) {
+
+    if (this.settings.loader) {
       this.removeLoader();
     }
+
+    // Reset the flag to indicate the method has finished executing
+    this.isLoadingPreviousContent = false;
   }
   
   
   scrollToSavedPosition() {
     const savedPosition = sessionStorage.getItem('scrollPosition');
-    if (savedPosition) {
-      console.log('scrolling to saved position');
-      window.scrollTo({ top: savedPosition, behavior: 'smooth' });
+    const productId = sessionStorage.getItem('productId');
+    if (savedPosition && this.settings.scrollHistory) {
+      window.scrollTo({ top: savedPosition, behavior: 'auto' });
       sessionStorage.removeItem('scrollPosition');
+    }
+
+    if (productId && this.settings.scrollHistory) {
+      const product = document.getElementById(productId);
+      if (product) {
+        product.scrollIntoView({ behavior: 'auto', block: 'center'});
+        sessionStorage.removeItem('productId');
+      }
     }
   }
   
@@ -222,21 +246,16 @@ class Ajaxinate {
       this.containerElement.insertAdjacentHTML('beforeend', newContainer.innerHTML);
   
       if (typeof newPagination === 'undefined') {
-        if (this.settings.saveHistory) {
-          window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
-        }
+        window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
         this.removePaginationElement();
       } else {
         this.paginationElement.innerHTML = newPagination.innerHTML;
-  
-        if (this.settings.saveHistory) {
-          window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
-        }
-  
+        window.history.pushState({ path: this.nextPageUrl }, '', this.nextPageUrl);
+      
         if (this.settings.callback && typeof this.settings.callback === 'function') {
           this.settings.callback(this.request.responseXML);
         }
-  
+
         this.initialize();
       }
     }.bind(this);
