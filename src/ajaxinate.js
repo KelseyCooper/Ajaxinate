@@ -239,6 +239,13 @@ class Ajaxinate {
       this.removeLoader();
     }
 
+    if (
+      this.settings.callback &&
+      typeof this.settings.callback === "function"
+    ) {
+      this.settings.callback(this.request.responseXML);
+    }
+
     // Reset the flag to indicate the method has finished executing
     this.isLoadingPreviousContent = false;
   }
